@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Portfolio</title>
+    <style>
+        /* Modern Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0c0c0e;
+            color: #f5f5f7;
+            line-height: 1.6;
+            padding: 0 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header / Navigation */
+        header {
+            padding: 40px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        nav a {
+            color: #86868b;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #fff;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 100px 0 60px 0;
+            max-width: 800px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #86868b;
+        }
+
+        /* Portfolio Grid Section */
+        .grid-section {
+            padding: 40px 0 80px 0;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-auto-rows: 240px;
+            gap: 20px;
+            grid-auto-flow: dense;
+        }
+
+        .portfolio-item {
+            position: relative;
+            background: #16161a;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            cursor: pointer; /* Changes mouse to a pointer hand to hint it's clickable */
+        }
+
+        /* Image classes to balance layout spacing */
+        .portfolio-item.landscape { grid-column: span 2; }
+        .portfolio-item.portrait { grid-row: span 2; }
+        .portfolio-item.wide-panoramic { grid-column: span 3; }
+        .portfolio-item.square { grid-column: span 1; grid-row: span 1; }
+
+        .portfolio-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .portfolio-item:hover img {
+            transform: scale(1.03);
+        }
+
+        /* Hover Overlay */
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(12, 12, 14, 0.5);
+            display: flex;
+            align-items: flex-end;
+            padding: 25px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .portfolio-item:hover .image-overlay {
+            opacity: 1;
+        }
+
+        .image-overlay h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        /* NEW FEATURE: Lightbox Modal Background */
+        .lightbox-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 9999; /* Forces popup above everything else */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 10, 12, 0.95);
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            cursor: zoom-out;
+        }
+
+        /* Class active when lightbox is displayed */
+        .lightbox-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* NEW FEATURE: The full uncropped image configuration */
+        .lightbox-img {
+            max-width: 90%;
+            max-height: 85vh;
+            object-fit: contain; /* CRUCIAL: Ensures 100% of the image is completely visible */
+            border-radius: 4px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+
+        .lightbox-modal.show .lightbox-img {
+            transform: scale(1);
+        }
+
+        /* Close Button styling */
+        .close-btn {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            color: #86868b;
+            font-size: 2.5rem;
+            font-weight: 200;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+        }
+
+        /* Contact Footer */
+        footer {
+            padding: 80px 0 40px 0;
+            border-top: 1px solid #222;
+            text-align: center;
+        }
+
+        footer h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        footer p {
+            color: #86868b;
+            margin-bottom: 25px;
+        }
+
+        .email-btn {
+            display: inline-block;
+            background: #fff;
+            color: #000;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: background 0.3s ease;
+        }
+
+        .email-btn:hover {
+            background: #e5e5e7;
+        }
+
+        .copyright {
+            margin-top: 50px;
+            font-size: 0.8rem;
+            color: #444;
+        }
+
+        /* Responsive Flow */
+        @media (max-width: 768px) {
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+                grid-auto-rows: auto;
+            }
+            .portfolio-item.landscape, .portfolio-item.portrait, .portfolio-item.wide-panoramic, .portfolio-item.square {
+                grid-column: auto;
+                grid-row: auto;
+                aspect-ratio: 4/3;
+            }
+            .close-btn { top: 20px; right: 25px; font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">Visual Portfolio</div>
+            <nav>
+                <a href="#work">Work</a>
+                <a href="#contact">Contact</a>
+            </nav>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Capturing stories through a technical lens.</h1>
+            <p>A curated collection of digital media, imagery, and visual storytelling production.</p>
+        </section>
+
+        <!-- Portfolio Gallery -->
+        <section class="grid-section" id="work">
+            <div class="portfolio-grid">
+
+                <!-- 13 Portfolio Items -->
+                <div class="portfolio-item landscape">
+                    <img src="images/your-photo-1.jpg" alt="Portfolio Image">
+                    <div class="image-overlay"><h3>Project 01</h3></div>
+                </div>
+
+                <div class="portfolio-item portrait">
+                    <img src="images/your-photo-2.jpg" alt="Portfolio Image">
+                    <div class="image-overlay"><h3>Project 02</h3></div>
+                </div>
+
+                <div class="portfolio-item square">
+                    <img src="images/your-photo-3.jpg" alt="Portfolio Image">
+                    <div class="image-overlay"><h3>Project 03</h3></div>
+                </div>
+
+                <div class="portfolio-item wide-panoramic">
+                    <img src="images/your-photo-4.jpg" alt="Portfolio Image">
+                    <div class="image-overlay"><h3>Project 04</h3></div>
+                </div>
+
+                <div class="portfolio-item landscape">
+                    <img src="images/your-photo-5.jpg" alt="Portfolio Image">
+                    <div class="image-overlay"><h3>Project 05</h3></div>
+                </div>
+
+                <div class="portfolio-item portrait">
+                    <img src="images/your-photo-6.jpg" alt="Portfolio Image">
+                    <div class="image-overlay"><h3>Project 06</h3></div>
+                </div>
+
+                <div class="portfolio-item square">
+                    <img src="images/your-photo-7.jpg" alt="Portfolio Image">
+                    <div class="image-overlay"><h3>Project 07</h3></div>
+                </div>
+
+                <div class="portfolio-item landscape">
+                    <img src="images/your-photo-8.jpg" alt="Portfolio Image">
+                    <div class="image-overlay"><h3>Project 08</h3></div>
+                </div>
+
+                <div class="portfolio-item square">
+                    <img src="images/your-photo-9.jpg" alt="Portfolio Image">
+                    <div class="image-overlay"><h3>Project 09</h3></div>
+                </div>
+
+                <div class="portfolio-item portrait">
+                    <img src="images/your-photo-10.jpg" alt="Portfolio Image">
+                    <div class="image-overlay"><h3>Project 10</h3></div>
+                </div>
+
+                <div class="portfolio-item landscape">
+                    <img src="images/your-photo-11.jpg" alt="Portfolio Image">
+                    <div class="image-overlay"><h3>Project 11</h3></div>
+                </div>
+
+                <div class="portfolio-item portrait">
+                    <img src="images/your-photo-12.jpg" alt="Portfolio Image">
+                    <div class="image-overlay"><h3>Project 12</h3></div>
+                </div>
+
+                <div class="portfolio-item landscape">
+                    <img src="images/your-photo-13.jpg" alt="Portfolio Image">
+                    <div class="image-overlay"><h3>Project 13</h3></div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- LIGHTBOX MODAL STRUCTURE -->
+        <div class="lightbox-modal" id="lightbox">
+            <span class="close-btn" id="closeLightbox">&times;</span>
+            <img class="lightbox-img" id="lightboxImage" src="" alt="Full Screen Uncropped View">
+        </div>
+
+        <!-- Contact Section -->
+        <footer id="contact">
+            <h2>Let's Collaborate</h2>
+            <p>Available for visual media projects, editing assignments, and technical documentation work.</p>
+            <a href="mailto:your.email@example.com" class="email-btn">Get In Touch</a>
+            <div class="copyright">&copy; 2026. All rights reserved.</div>
+        </footer>
+    </div>
+
+    <!-- LIGHTBOX LIGHTWEIGHT SCRIPT FUNCTION -->
+    <script>
+        const portfolioItems = document.querySelectorAll('.portfolio-item');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImage');
+        const closeBtn = document.getElementById('closeLightbox');
+
+        // Open Lightbox when any image cell is triggered
+        portfolioItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const clickedImgSrc = item.querySelector('img').src;
+                lightboxImg.src = clickedImgSrc;
+                lightbox.classList.add('show');
+            });
+        });
+
+        // Close functions
+        closeBtn.addEventListener('click', () => {
+            lightbox.classList.remove('show');
+        });
+
+        lightbox.addEventListener('click', (e) => {
+            if (e.target !== lightboxImg) {
+                lightbox.classList.remove('show');
+            }
+        });
+    </script>
+
+</body>
+</html>
